@@ -19,15 +19,17 @@ Questa app realizza il miglior piano di studio possibile a partire dalla prefere
 
 st.write("Scarica il file di esempio e compila la colonna di preferenze")
 
-path = "/Users/marco/Library/Mobile Documents/com~apple~CloudDocs/Progetti/Piano di studi/Dati/Source.xlsx"
-df_base = pd.read_excel(path)
+PATH = "Source.xlsx"
+df_base = pd.read_excel(PATH)
 df_base['Rating'] = 0
+
 
 def filedownload(df):
     csv = df.to_csv(index=False)
     b64 = base64.b64encode(csv.encode()).decode()  # strings <-> bytes conversions
     href = f'<a href="data:file/csv;base64,{b64}" download="playerstats.csv">Download CSV File</a>'
     return href
+
 
 st.markdown(filedownload(df_base), unsafe_allow_html=True)
 

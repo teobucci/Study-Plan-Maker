@@ -1,7 +1,8 @@
-from pulp import *
+import pulp
 import pandas as pd
 from tkinter import filedialog as fd
 from tkinter import *
+
 
 def genera_piano(df, CFU_max_sem=35, CFU_max_tot=122, MST=TRUE):
 
@@ -24,9 +25,9 @@ def genera_piano(df, CFU_max_sem=35, CFU_max_tot=122, MST=TRUE):
     Groups = [0, 1, 2, 3, 4, 5]
     min_cfus = [10, 16, 10, 16, 0, 0]
 
-    ### PROBLEM
-    prob = LpProblem('Il piano di studi', LpMaximize)
-    courses_vars = pulp.LpVariable.dicts('corso_anno', (Courses, Years), lowBound = 0, upBound = 1, cat = 'Binary')  # creazione variabili
+    # PROBLEM
+    prob = pulp.LpProblem('Il piano di studi', pulp.const.LpMaximize)
+    courses_vars = pulp.LpVariable.dicts('corso_anno', (Courses, Years), lowBound=0, upBound=1, cat='Binary')  # creazione variabili
 
     prob += (
         pulp.lpSum(
@@ -37,7 +38,7 @@ def genera_piano(df, CFU_max_sem=35, CFU_max_tot=122, MST=TRUE):
         )
     )
 
-    ### VINCOLI
+    # VINCOLI
     if MST:
         prob += courses_vars[153][1] == 1, "Compulsory 1"
         prob += courses_vars[154][1] == 1, "Compulsory 2"
@@ -66,20 +67,20 @@ def genera_piano(df, CFU_max_sem=35, CFU_max_tot=122, MST=TRUE):
         prob += pulp.lpSum(
             [cfus[i]*courses_vars[i][j] for i in group_courses]) <= CFU_max_sem, ("Max cfu sem 2 anno " + str(j))
 
-    for k in range(0, 4):  #in Groups
+    for k in range(0, 4):  # in Groups
         group_courses = [i for i in Courses if group_dic[i] == k]
         group_combos = [(i, j) for i in group_courses for j in Years]
         prob += pulp.lpSum(
-            [cfus[i]*courses_vars[i][j] for (i,j) in group_combos]) == min_cfus[k], ("Min cfu gruppo " + str(k)) ##>=
+            [cfus[i]*courses_vars[i][j] for (i, j) in group_combos]) == min_cfus[k], ("Min cfu gruppo " + str(k))  # >=
 
     prob += pulp.lpSum(
-        [cfus[i]*courses_vars[i][j] for (i,j) in combos]) <= CFU_max_tot, "Max cfu totali"
+        [cfus[i]*courses_vars[i][j] for (i, j) in combos]) <= CFU_max_tot, "Max cfu totali"
 
-    ### RISOLUZIONE
+    # RISOLUZIONE
     prob.solve()
 
     corsi = []
-    for (i,j) in combos:
+    for (i, j) in combos:
         if courses_vars[i][j].varValue == 1.0:
             course_name = names[i]
             semester_name = semester[i]
@@ -91,9 +92,9 @@ def genera_piano(df, CFU_max_sem=35, CFU_max_tot=122, MST=TRUE):
             corsi.append(el)
             #print("Svolgerai il corso " + str(i) + " " + course_name + " al sem " + str(semester_name) + " all'anno " + str(j))
 
-    piano = pd.DataFrame(corsi, columns = ['Codice', 'Denominazione', 'CFU', 'Gruppo', 'idgruppo', 'Anno', 'Sem'])
+    piano = pd.DataFrame(corsi, columns=['Codice', 'Denominazione', 'CFU', 'Gruppo', 'idgruppo', 'Anno', 'Sem'])
     piano = piano.set_index('Codice')
     piano = piano.drop(columns=['idgruppo'])
-    piano = piano.sort_values(['Anno','Sem'], ascending = [TRUE, TRUE])
-    
+    piano = piano.sort_values(['Anno', 'Sem'], ascending=[TRUE, TRUE])
+
     return piano
