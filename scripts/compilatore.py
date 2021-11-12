@@ -3,7 +3,6 @@
 # importo le librerie
 import pandas as pd
 import pulp
-import logging
 
 
 # importo le funzioni
@@ -38,7 +37,7 @@ def generate_plan(dfu, track_choice='MST', CFU_max_sem=35, CFU_max_tot=121, PATH
     df_comp = pd.concat([df_comp1, df_comp2])  # unisco i compulsory dei due anni
     df_comp.reset_index(inplace=True, drop=True)  # reset dell'index 0-4,0-1
 
-    logging.info(df_comp)
+    # df_comp
 
     # dropna per rimuovere le righe senza rating, valgono 0 e non le consideriamo
     df_user = dfu  # pd.read_excel('source.xlsx', index_col=0).dropna()
@@ -47,7 +46,7 @@ def generate_plan(dfu, track_choice='MST', CFU_max_sem=35, CFU_max_tot=121, PATH
     df_user = df_user[df_user['Rating'] != 0]
 
     df_user['Gruppo'] = df_user['Gruppo'].apply(eval)  # serve perché nel file i gruppi sono ['FREE'], mentre vogliamo [FREE]
-    logging.info(df_user)
+    # df_user
 
     # creo un dataframe per dare corrispondenza codice-denominazione
     code_name = pd.concat([df_comp, df_user]).set_index('Codice')
@@ -200,7 +199,7 @@ def generate_plan(dfu, track_choice='MST', CFU_max_sem=35, CFU_max_tot=121, PATH
     piano = piano.set_index('Codice')
     piano = piano.sort_values(['Anno', 'Sem'], ascending=[True, True])
 
-    logging.info(piano)
+    # piano
 
     total_cfus = pulp.lpSum([cfus[i]*x[i][j][k].varValue for (i, j, k) in product(COURSES, YEARS, GROUPS)])
     print(f'Total number of CFUs:      {total_cfus}')
