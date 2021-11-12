@@ -1,8 +1,7 @@
 import pandas as pd
 import streamlit as st
 import base64
-import logging
-from compilatore import generate_plan
+import scripts.compilatore as mylib
 from math import floor
 
 # Interfaccia web
@@ -55,7 +54,7 @@ st.dataframe(df)
 
 if st.button('Calcola piano'):
     if uploaded_file:
-        piano, cfus, status = generate_plan(df, track_choice=track_choice, CFU_max_sem=CFU_max_sem, CFU_max_tot=CFU_max_tot)
+        piano, cfus, status = mylib.generate_plan(df, track_choice=track_choice, CFU_max_sem=CFU_max_sem, CFU_max_tot=CFU_max_tot)
         if status == 1:
             st.write("Problem is Optimal")
             st.dataframe(piano)
