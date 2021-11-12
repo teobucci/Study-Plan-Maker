@@ -3,6 +3,7 @@ import streamlit as st
 import base64
 import scripts.compilatore as mylib
 from math import floor
+from os.path import join
 
 # Interfaccia web
 st.markdown('# Study Plan maker')
@@ -24,7 +25,7 @@ track_choice = st.selectbox('Major', ('MCS', 'MMF', 'MST'), 2, format_func=forma
 
 st.write('Download the example file and fill in the ``Rating`` column.')
 
-PATH = 'source.csv'
+PATH = join('assets', 'source.csv')
 df_base = pd.read_csv(PATH, header=0)
 df_base['Rating'] = 0
 
