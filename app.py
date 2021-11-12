@@ -13,6 +13,7 @@ CFU_max_tot = st.number_input('Max Total CFUs', min_value=120, max_value=122, va
 CFU_max_sem = st.number_input('Max CFUs per semester', min_value=30, max_value=80, value=35, step=1)
 
 
+@st.cache
 def format_func(track):
     return {
         'MCS': 'MCS - Computational Science and Computational Learning',
@@ -30,6 +31,7 @@ df_base = pd.read_csv(PATH, header=0)
 df_base['Rating'] = 0
 
 
+@st.cache
 def filedownload(df):
     csv = df.to_csv(index=False)
     b64 = base64.b64encode(csv.encode()).decode()  # strings <-> bytes conversions
@@ -53,16 +55,18 @@ if uploaded_file:
 
 st.dataframe(df)
 
-if st.button('Calcola piano'):
+
+if st.button('Compute the best Study Plan!'):
     if uploaded_file:
         piano, cfus, status = mylib.generate_plan(df, track_choice=track_choice, CFU_max_sem=CFU_max_sem, CFU_max_tot=CFU_max_tot)
         if status == 1:
-            st.write("Problem is Optimal")
+            st.success("Problem is Optimal!")
             st.dataframe(piano)
             st.write(f'Total number of CFUs: {sum(cfus)}')
             for idx, cfu in enumerate(cfus):
                 st.write(f'CFUs for year {floor(idx/2)+1} semester {idx%2+1}: {cfu}')
+            st.download_button('Download the generated Study Plan', data=piano.to_csv(index=False).encode('utf-8'), file_name='study_plan_output.csv',)
         else:
-            st.error('Too many constraints, try again relaxing some options.')
+            st.error('Problem is Infeasible. Try again relaxing some constraints.')
     else:
         st.error('Please upload a valid input and try again.')
