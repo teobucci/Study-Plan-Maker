@@ -67,6 +67,6 @@ if st.button('Compute the best Study Plan!'):
                 st.write(f'CFUs for year {floor(idx/2)+1} semester {idx%2+1}: {cfu}')
             st.download_button('Download the generated Study Plan', data=piano.to_csv(index=False).encode('utf-8'), file_name='study_plan_output.csv',)
         else:
-            st.error('Problem is Infeasible. Try again relaxing some constraints.')
+            st.error('Problem is Infeasible. This usually means that you have either too many constraints (eg. CFUs per month is too low) or that you haven\'t chosen enough courses from both 1st and 2nd semester.')
     else:
         st.error('Please upload a valid input and try again.')
