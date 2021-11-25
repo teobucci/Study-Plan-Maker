@@ -55,19 +55,31 @@ if uploaded_file:
 
 st.dataframe(df)
 
+DEEP = st.number_input('How many sub-optimal plans would you like to compute? (default: 0)', min_value=0, max_value=5, value=0, step=1)
 
 if st.button('Compute the best Study Plan!'):
     if uploaded_file:
-        piano, cfus, status = mylib.generate_plan(df, track_choice=track_choice, CFU_max_sem=CFU_max_sem, CFU_max_tot=CFU_max_tot)
-        if status == 1:
-            st.success("Problem is Optimal!")
-            st.dataframe(piano)
-            st.write(f'Total number of CFUs: {sum(cfus)}')
-            for idx, cfu in enumerate(cfus):
-                st.write(f'CFUs for year {floor(idx/2)+1} semester {idx%2+1}: {cfu}')
-            st.download_button('Download the generated Study Plan', data=piano.to_csv(index=False).encode('utf-8'), file_name='study_plan_output.csv',)
-        else:
+        plans, objective = mylib.generate_plan(df, track=track_choice, CFU_max_sem=CFU_max_sem, CFU_max_tot=CFU_max_tot, N_SUBOPTIMAL=DEEP)
+
+        if len(plans) == 0:
             st.error('Problem is Infeasible. This usually means that you have either too many constraints (eg. CFUs per month is too low) or that you haven\'t chosen enough courses from both 1st and 2nd semester.')
+        elif len(plans) == DEEP + 1:
+            st.success('Problem is Optimal! And the desired number of sub-optimal solutions has been computed.')
+
+            for plan, obj in zip(plans, objective):
+                st.dataframe(plan)
+                cfu_tot = sum(plan['CFU']*plan['%'])
+                cfu_sem = plan.groupby(['Anno', 'Sem'])['CFU'].sum()
+                st.write(f'Total interest: {obj}')
+                st.write(f'The total number of CFUs is: {cfu_tot}')
+                st.write(f'Here is the number of CFUs per semester:')
+                st.dataframe(cfu_sem)
+                st.write(mylib.get_exchangable_exams(plan, df, track_choice))
+                #st.download_button('Download the generated Study Plan', data=piano.to_csv(index=False).encode('utf-8'), file_name='study_plan_output.csv',)
+                st.markdown("""---""")
+        else:
+            st.success('Problem is Optimal!')
+            st.warning('But the desired number of sub-optimal solutions could not be computed.')
     else:
         st.error('Please upload a valid input and try again.')
 
