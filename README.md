@@ -6,4 +6,5 @@ This web-app uses the `pulp` Python library to optimize the study plan for the s
 ## Instructions
 
 Visit: https://share.streamlit.io/teobucci/compilatore-piano-di-studi/app.py.
+
 An explanation of how the model works can be found directly at the bottom of the web-app.
