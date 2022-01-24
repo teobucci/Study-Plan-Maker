@@ -142,3 +142,8 @@ y_{i} \leq \sum\limits _{j\in J,k\in K} x_{ijk},\\ \\ \\forall i\in I\\\\
 $$
 """
     )
+
+with st.expander("About"):
+    st.markdown("This is a student project not affiliated with Politecnico di Milano.")
+    link = 'Created by [Teo Bucci](https://github.com/teobucci)'+' '+'[Filippo Cipriani](https://github.com/SmearyTundra)'+' '+'[Marco Lucchini](https://github.com/marcolucchini)'
+    st.markdown(link, unsafe_allow_html=True)
