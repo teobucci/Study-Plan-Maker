@@ -11,9 +11,9 @@ An explanation of how the model works can be found directly at the bottom of the
 
 ## Authors
 
-- Teo Bucci ([GitHub](https://github.com/teobucci), [Linkedin](https://www.linkedin.com/in/teo-bucci-8598641b7/))
-- Filippo Cipriani ([GitHub](https://github.com/smearyTundra), [Linkedin](https://www.linkedin.com/in/filippo-c-621b57223/))
-- Marco Lucchini ([GitHub](https://github.com/marcolucchini), [Linkedin](https://www.linkedin.com/in/marco-lucchini-294801218/))
+- Teo Bucci ([@teobucci](https://www.github.com/teobucci))
+- Filippo Cipriani ([@SmearyTundra](https://www.github.com/SmearyTundra))
+- Marco Lucchini ([@marcolucchini](https://www.github.com/marcolucchini))
 
 ## License
 
