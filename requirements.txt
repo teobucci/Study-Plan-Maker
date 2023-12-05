@@ -2,3 +2,5 @@ numpy==1.23.4
 pandas==1.5.3
 pulp==2.7.0
 streamlit==1.22.0
+openpyxl==3.0.9
+
