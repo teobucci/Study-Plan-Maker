@@ -1,16 +1,10 @@
-#!/usr/bin/env python
-
-# importo le librerie
 import pandas as pd
 import pulp
-
-
-# importo le funzioni
 from os.path import join
 from itertools import product
 
 
-def generate_plan(dfu, track='MST', CFU_max_sem=35, CFU_max_tot=121, PATH_CFU_COSTRAINTS=join('assets', 'min_CFUs.xlsx'), N_SUBOPTIMAL=0):
+def generate_plan(dfu, track='MST', CFU_max_sem=35, CFU_max_tot=121, PATH_CFU_COSTRAINTS=join('assets', 'min_CFUs.xlsx'), num_suboptimal=0):
 
     # PARAMETRI DA SCEGLIERE
 
@@ -181,7 +175,7 @@ def generate_plan(dfu, track='MST', CFU_max_sem=35, CFU_max_tot=121, PATH_CFU_CO
     my_study_plans.append(get_plan_from_variables(x, COURSES, YEARS, GROUPS, code_name, codes, semester, cfus, GROUPS_names))
 
     epsilon = 0.1
-    for i in range(N_SUBOPTIMAL):
+    for i in range(num_suboptimal):
         prob += pulp.lpSum([rating[i]*cfus[i]*x[i][j][k] for (i, j, k) in product(COURSES, YEARS, GROUPS)]) <= prob.objective.value() - epsilon
         status = prob.solve()
 
