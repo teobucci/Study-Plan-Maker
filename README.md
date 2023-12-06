@@ -15,6 +15,15 @@ An explanation of how the model works can be found directly at the bottom of the
 - Filippo Cipriani ([@SmearyTundra](https://www.github.com/SmearyTundra))
 - Marco Lucchini ([@marcolucchini](https://www.github.com/marcolucchini))
 
+## Improvements
+
+- [ ] Handle same courses with different number of credits
+- [ ] Handle the possibility to extend the number of years of the study plan
+- [ ] Allow to run the optimization from an already started study plan
+- [ ] Handle an Erasmus semester
+- [ ] Improve insertion of preferences instead of using a CSV file
+- [ ] Implement automatic update of courses from Polimi website
+
 ## License
 
 [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
