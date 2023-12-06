@@ -1,9 +1,8 @@
 import pandas as pd
 import streamlit as st
-import base64
 import src.compilatore as compilatore
 from os.path import join
-import constants
+import src.constants as constants
 
 st.markdown('# Study Plan maker')
 st.markdown("### for the MSc in Mathematical Engineering")
@@ -46,7 +45,13 @@ num_suboptimal = st.number_input('How many sub-optimal plans would you like to c
 
 if st.button('Compute the best Study Plan!'):
     if uploaded_file:
-        plans, objective = compilatore.generate_plan(df, track=track_choice, CFU_max_sem=CFU_max_sem, CFU_max_tot=CFU_max_tot, num_suboptimal=num_suboptimal)
+        plans, objective = compilatore.generate_plan(
+            df=df,
+            track=track_choice,
+            CFU_max_sem=CFU_max_sem,
+            CFU_max_tot=CFU_max_tot,
+            num_suboptimal=num_suboptimal
+            )
 
         if len(plans) == 0:
             st.error(constants.message_infeasible)
@@ -59,7 +64,7 @@ if st.button('Compute the best Study Plan!'):
                 cfu_sem = plan.groupby(['Anno', 'Sem'])['CFU'].sum()
                 st.write(f'Total interest: {obj}')
                 st.write(f'The total number of CFUs is: {cfu_tot}')
-                st.write(f'Here is the number of CFUs per semester:')
+                st.write('Here is the number of CFUs per semester:')
                 st.dataframe(cfu_sem)
                 st.write(compilatore.get_exchangable_exams(plan, df, track_choice))
                 #st.download_button('Download the generated Study Plan', data=piano.to_csv(index=False).encode('utf-8'), file_name='study_plan_output.csv',)

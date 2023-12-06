@@ -2,9 +2,12 @@ import pandas as pd
 import pulp
 from os.path import join
 from itertools import product
+import constants
 
 
-def generate_plan(dfu, track='MST', CFU_max_sem=35, CFU_max_tot=121, PATH_CFU_COSTRAINTS=join('assets', 'min_CFUs.xlsx'), num_suboptimal=0):
+def generate_plan(df, track='MST', CFU_max_sem=35, CFU_max_tot=121, num_suboptimal=0):
+
+    PATH_CFU_COSTRAINTS=join('assets', 'min_CFUs.xlsx')
 
     # PARAMETRI DA SCEGLIERE
 
@@ -32,7 +35,7 @@ def generate_plan(dfu, track='MST', CFU_max_sem=35, CFU_max_tot=121, PATH_CFU_CO
     # df_comp
 
     # dropna per rimuovere le righe senza rating, valgono 0 e non le consideriamo
-    df_user = dfu  # pd.read_excel('source.xlsx', index_col=0).dropna()
+    df_user = df  # pd.read_excel('source.xlsx', index_col=0).dropna()
 
     # anche le righe dove il rating è 0 le eliminiamo per risparmiare variabili
     df_user = df_user[df_user['Rating'] != 0]
@@ -63,7 +66,6 @@ def generate_plan(dfu, track='MST', CFU_max_sem=35, CFU_max_tot=121, PATH_CFU_CO
 
     df = pd.concat([df_comp, df_user]).reset_index(drop=True)  # drop serve per far si che il vecchio brutto indice non diventi una colonna
 
-    # df.head(10)
 
     dfexplode = df.explode('Gruppo')
     # dfexplode.head()
@@ -115,7 +117,7 @@ def generate_plan(dfu, track='MST', CFU_max_sem=35, CFU_max_tot=121, PATH_CFU_CO
         prob += x[i][2][GROUPS[-1]] == 1, f"Compulsory course {i} in year 2"
 
     # (capacità) max cfu totali
-    prob += pulp.lpSum([cfus[i]*x[i][j][k] for (i, j, k) in product(COURSES, YEARS, GROUPS)]) <= CFU_max_tot, f"Maximum total CFUs"
+    prob += pulp.lpSum([cfus[i]*x[i][j][k] for (i, j, k) in product(COURSES, YEARS, GROUPS)]) <= CFU_max_tot, "Maximum total CFUs"
     #prob += pulp.lpSum([cfus[i]*y[i] for i in COURSES]) <= CFU_max_tot, f"Maximum total CFUs"
 
     # (capacità) max cfu per semestre per anno
@@ -186,7 +188,8 @@ def generate_plan(dfu, track='MST', CFU_max_sem=35, CFU_max_tot=121, PATH_CFU_CO
             new_plan = get_plan_from_variables(x, COURSES, YEARS, GROUPS, code_name, codes, semester, cfus, GROUPS_names)
             my_study_plans.append(new_plan)
             objective.append(prob.objective.value())
-        else:  # non era ammissibile questo, quindi neanche i rimanenti, esco dal loop
+        else:
+            # non era ammissibile questo, quindi neanche i rimanenti, esco dal loop
             break
 
     # prob.writeLP('pulp_problem_description.txt')
