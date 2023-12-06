@@ -9,6 +9,8 @@ def generate_plan(df, track='MST', CFU_max_sem=35, CFU_max_tot=121, num_suboptim
     assert track in ['MCS', 'MMF', 'MST']
     print(f'You chose {track}. Congratulations!')
 
+    ### Prepare the data ------------------------------------------------------
+
     df_cfu = pd.read_excel(constants.path_min_cfus, index_col=0).dropna()
     df_cfu[track] = 0  #  aggiungo colonna il gruppo del track con minimo 0 CFU
 
@@ -19,8 +21,6 @@ def generate_plan(df, track='MST', CFU_max_sem=35, CFU_max_tot=121, num_suboptim
     # comp = compulsory
     df_comp1 = pd.read_excel(constants.path_compulsory[track][0]).dropna()
     df_comp2 = pd.read_excel(constants.path_compulsory[track][1]).dropna()
-    comp1 = len(df_comp1)
-    comp2 = len(df_comp2)
     df_comp = pd.concat([df_comp1, df_comp2])  # unisco i compulsory dei due anni
     df_comp.reset_index(inplace=True, drop=True)  # reset dell'index 0-4,0-1
 
@@ -87,6 +87,8 @@ def generate_plan(df, track='MST', CFU_max_sem=35, CFU_max_tot=121, num_suboptim
     YEARS = [1, 2]
     GROUPS = list(range(len(GROUPS_names)))
 
+    ### Create the model ------------------------------------------------------
+
     # PROBLEMA
     prob = pulp.LpProblem('Piano_di_studi', pulp.const.LpMaximize)
 
@@ -101,11 +103,11 @@ def generate_plan(df, track='MST', CFU_max_sem=35, CFU_max_tot=121, num_suboptim
     # VINCOLI
 
     # (richiesta) obbligatorietà dei corsi
-    for i in range(comp1):
+    for i in range(len(df_comp1)):
         # 5 dovrebbe essere l'indice dell'ultimo gruppo, quello "finto" della track
         prob += x[i][1][GROUPS[-1]] == 1, f"Compulsory course {i} in year 1"
 
-    for i in range(comp1, comp1+comp2):
+    for i in range(len(df_comp1), len(df_comp1)+len(df_comp2)):
         prob += x[i][2][GROUPS[-1]] == 1, f"Compulsory course {i} in year 2"
 
     # (capacità) max cfu totali
@@ -152,6 +154,8 @@ def generate_plan(df, track='MST', CFU_max_sem=35, CFU_max_tot=121, num_suboptim
 
     # RISOLUZIONE
     status = prob.solve()
+
+    ### Post-processing -------------------------------------------------------
 
     print(f"Status:    {pulp.LpStatus[status]}")
     print(f"Objective: {prob.objective.value()}")
