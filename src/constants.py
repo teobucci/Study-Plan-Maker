@@ -1,5 +1,12 @@
+from os.path import join
 
-
+path_assets = 'assets'
+path_min_cfus = join(path_assets, 'min_CFUs.xlsx')
+path_compulsory = {
+    'MCS': (join(path_assets, 'source_MCS_1.xlsx'), join(path_assets, 'source_MCS_2.xlsx')),
+    'MMF': (join(path_assets, 'source_MMF_1.xlsx'), join(path_assets, 'source_MMF_2.xlsx')),
+    'MST': (join(path_assets, 'source_MST_1.xlsx'), join(path_assets, 'source_MST_2.xlsx'))
+}
 
 model_description = """
 **Sets**

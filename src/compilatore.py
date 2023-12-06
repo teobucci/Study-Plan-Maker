@@ -1,32 +1,24 @@
 import pandas as pd
 import pulp
-from os.path import join
 from itertools import product
-import constants
+import src.constants as constants
 
 
 def generate_plan(df, track='MST', CFU_max_sem=35, CFU_max_tot=121, num_suboptimal=0):
 
-    PATH_CFU_COSTRAINTS=join('assets', 'min_CFUs.xlsx')
-
-    # PARAMETRI DA SCEGLIERE
-
-    # scelta del track
-    #choices = ['MCS', 'MMF', 'MST']
+    assert track in ['MCS', 'MMF', 'MST']
     print(f'You chose {track}. Congratulations!')
 
-    df_cfu = pd.read_excel(PATH_CFU_COSTRAINTS, index_col=0).dropna()
+    df_cfu = pd.read_excel(constants.path_min_cfus, index_col=0).dropna()
     df_cfu[track] = 0  #  aggiungo colonna il gruppo del track con minimo 0 CFU
 
     GROUPS_names = df_cfu.columns.tolist()
     min_cfus = df_cfu.loc[track].tolist()
 
     # DATAFRAME CORSI OBBLIGATORI
-    PATH1 = join('assets', 'source_'+track+'_1.xlsx')
-    PATH2 = join('assets', 'source_'+track+'_2.xlsx')
     # comp = compulsory
-    df_comp1 = pd.read_excel(PATH1).dropna()
-    df_comp2 = pd.read_excel(PATH2).dropna()
+    df_comp1 = pd.read_excel(constants.path_compulsory[track][0]).dropna()
+    df_comp2 = pd.read_excel(constants.path_compulsory[track][1]).dropna()
     comp1 = len(df_comp1)
     comp2 = len(df_comp2)
     df_comp = pd.concat([df_comp1, df_comp2])  # unisco i compulsory dei due anni
